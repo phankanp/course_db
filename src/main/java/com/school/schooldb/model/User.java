@@ -2,38 +2,50 @@ package com.school.schooldb.model;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
-@Entity(name = "users")
-
+@Table(name = "users", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {
+                "emailAddress"
+        })
+})
+@Entity
 public class User {
     @Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
-    @NotBlank
+    @NotEmpty
     @Size(min = 3, max = 50)
     private String firstName;
 
-    @NotBlank
+    @NotEmpty
     @Size(min = 3, max = 50)
     private String lastName;
 
-    @NotBlank
+    @NotEmpty
     @Size(max = 40)
     @Email
     private String emailAddress;
 
-    @NotBlank
+    @NotEmpty
     @Size(min = 6, max = 60)
     private String password;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "user_id")
     private List<Course> courses;
+
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinTable(name = "user_roles",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id"))
+    private Set<Role> roles = new HashSet<>();
 
     private User() {
         courses = new ArrayList<>();
@@ -84,5 +96,21 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public List<Course> getCourses() {
+        return courses;
+    }
+
+    public void setCourses(List<Course> courses) {
+        this.courses = courses;
+    }
+
+    public Set<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles;
     }
 }

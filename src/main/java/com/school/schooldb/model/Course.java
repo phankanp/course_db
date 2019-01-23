@@ -5,11 +5,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 
-@Entity(name = "courses")
+@Entity
 public class Course {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
     @ManyToOne
@@ -28,12 +28,14 @@ public class Course {
     @NotEmpty(message = "Must enter a materials needed for the course")
     private String materialsNeeded;
 
-    public Course() {}
+    public Course() {
+    }
 
     public Course(User user, @NotEmpty(message = "Must enter a course title") String title, @NotEmpty(message = "Must" +
             " enter a course description") String description, @NotEmpty(message = "Must enter a estimated time")
-            String estimatedTime, @NotEmpty(message = "Must enter a materials needed for the course") String
-            materialsNeeded) {
+                          String estimatedTime, @NotEmpty(message = "Must enter a materials needed for the course")
+            String
+                          materialsNeeded) {
         this.user = user;
         this.title = title;
         this.description = description;
