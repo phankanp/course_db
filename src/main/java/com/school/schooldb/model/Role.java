@@ -1,6 +1,8 @@
 package com.school.schooldb.model;
 
 
+import org.hibernate.annotations.NaturalId;
+
 import javax.persistence.*;
 
 @Entity
@@ -8,10 +10,11 @@ import javax.persistence.*;
 public class Role {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     @Enumerated(EnumType.STRING)
+
     @Column(length = 60)
     private RoleName name;
 

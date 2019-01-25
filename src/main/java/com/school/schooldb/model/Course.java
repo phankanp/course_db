@@ -13,13 +13,14 @@ public class Course {
     private long id;
 
     @ManyToOne
-    @JsonIgnore
+    //@JsonIgnore
     private User user;
 
     @NotEmpty(message = "Must enter a course title")
     private String title;
 
     @NotEmpty(message = "Must enter a course description")
+    @Column(length = 2024)
     private String description;
 
     @NotEmpty(message = "Must enter a estimated time")
@@ -31,12 +32,12 @@ public class Course {
     public Course() {
     }
 
-    public Course(User user, @NotEmpty(message = "Must enter a course title") String title, @NotEmpty(message = "Must" +
+    public Course(@NotEmpty(message = "Must enter a course title") String title, @NotEmpty(message = "Must" +
             " enter a course description") String description, @NotEmpty(message = "Must enter a estimated time")
                           String estimatedTime, @NotEmpty(message = "Must enter a materials needed for the course")
             String
                           materialsNeeded) {
-        this.user = user;
+
         this.title = title;
         this.description = description;
         this.estimatedTime = estimatedTime;
