@@ -4,9 +4,13 @@ package com.school.schooldb.security.payload;
 public class JwtResponse {
     private String token;
     private String type = "Bearer";
+    private String firstName;
+    private String lastName;
 
-    public JwtResponse(String accessToken) {
+    public JwtResponse(String accessToken, String firstName, String lastName) {
         this.token = accessToken;
+        this.firstName = firstName;
+        this.lastName = lastName;
     }
 
     public String getToken() {
@@ -23,5 +27,21 @@ public class JwtResponse {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 }

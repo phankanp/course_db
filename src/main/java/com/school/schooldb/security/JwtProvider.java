@@ -1,6 +1,8 @@
 package com.school.schooldb.security;
 
+import com.school.schooldb.model.User;
 import com.school.schooldb.service.UserAdapter;
+import com.school.schooldb.service.UserService;
 import io.jsonwebtoken.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
@@ -25,7 +27,7 @@ public class JwtProvider {
 
         // Creating the JWT
         return Jwts.builder()
-                .setSubject((userAdapter.getUsername()))
+                .setSubject(userAdapter.getUsername())
                 .setIssuedAt(new Date())
                 .setExpiration(expirationDate)
                 .signWith(SignatureAlgorithm.HS512, jwtSecret)

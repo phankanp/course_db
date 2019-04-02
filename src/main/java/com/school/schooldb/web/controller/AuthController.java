@@ -9,21 +9,23 @@ import com.school.schooldb.security.JwtProvider;
 import com.school.schooldb.security.payload.JwtResponse;
 import com.school.schooldb.security.payload.LoginForm;
 import com.school.schooldb.security.payload.SignUpForm;
+import com.school.schooldb.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 @RestController
@@ -36,6 +38,8 @@ public class AuthController {
 
     private final RoleRepository roleRepository;
 
+    private final UserService userService;
+
     private final PasswordEncoder passwordEncoder;
 
     private final JwtProvider jwtProvider;
@@ -43,16 +47,17 @@ public class AuthController {
 
     @Autowired
     public AuthController(AuthenticationManager authenticationManager, UserRepository userRepository, RoleRepository
-            roleRepository, PasswordEncoder passwordEncoder, JwtProvider jwtProvider) {
+            roleRepository, UserService userService, PasswordEncoder passwordEncoder, JwtProvider jwtProvider) {
         this.authenticationManager = authenticationManager;
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
+        this.userService = userService;
         this.passwordEncoder = passwordEncoder;
         this.jwtProvider = jwtProvider;
     }
 
     // User sign and generate token
-    @PostMapping("/signin")
+    @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginForm loginForm) {
 
         Authentication authentication = authenticationManager.authenticate(
@@ -66,7 +71,9 @@ public class AuthController {
 
         String jwt = jwtProvider.generateToken(authentication);
 
-        return ResponseEntity.ok(new JwtResponse(jwt));
+        User user = userService.findByEmail(loginForm.getEmail());
+
+        return ResponseEntity.ok(new JwtResponse(jwt,user.getFirstName(), user.getLastName()));
     }
 
     // User registration
@@ -82,6 +89,8 @@ public class AuthController {
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
+        userRepository.save(user);
+
         Role userRole = new Role(RoleName.ROLE_USER);
 
         Set<Role> roles = new HashSet<>();
@@ -90,10 +99,17 @@ public class AuthController {
 
         user.setRoles(roles);
 
-        userRepository.save(user);
-
         return ResponseEntity.ok().body("User registration complete");
+    }
 
+    @GetMapping("/user")
+    public ResponseEntity<?> getUserInfo(@AuthenticationPrincipal UserDetails userDetails) {
+        User user = userService.findByEmail(userDetails.getUsername());
 
+        Map<Object, Object> model = new HashMap<>();
+        model.put("firstName", user.getFirstName());
+        model.put("lastName", user.getLastName());
+
+        return ResponseEntity.ok(model);
     }
 }
