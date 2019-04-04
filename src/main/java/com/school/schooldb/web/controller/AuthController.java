@@ -60,6 +60,20 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginForm loginForm) {
 
+        User user = userService.findByEmail(loginForm.getEmail());
+
+        Map<String, String> errors = new HashMap<>();
+
+        if (user == null) {
+            if (!userRepository.existsByEmailAddress(loginForm.getEmail())) {
+                errors.put("email", "Invalid email");
+                return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+            }
+        } else if (user.getPassword() != passwordEncoder.encode(loginForm.getPassword())) {
+            errors.put("password", "Invalid password");
+            return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+        }
+
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         loginForm.getEmail(),
@@ -67,17 +81,17 @@ public class AuthController {
                 )
         );
 
+        System.out.println(authentication + "*************************");
+
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         String jwt = jwtProvider.generateToken(authentication);
-
-        User user = userService.findByEmail(loginForm.getEmail());
 
         return ResponseEntity.ok(new JwtResponse(jwt,user.getFirstName(), user.getLastName()));
     }
 
     // User registration
-    @PostMapping("/signup")
+    @PostMapping("/register")
     public ResponseEntity<String> registerUser(@Valid @RequestBody SignUpForm signUpForm) {
 
         if (userRepository.existsByEmailAddress(signUpForm.getEmail())) {
