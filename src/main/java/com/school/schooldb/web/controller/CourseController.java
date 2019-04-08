@@ -2,6 +2,7 @@ package com.school.schooldb.web.controller;
 
 import com.school.schooldb.model.Course;
 import com.school.schooldb.model.User;
+import com.school.schooldb.security.payload.JwtResponse;
 import com.school.schooldb.service.CourseService;
 import com.school.schooldb.service.UserService;
 import com.school.schooldb.util.CustomErrorType;
@@ -16,9 +17,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api")
@@ -38,8 +37,25 @@ public class CourseController {
 
     // Get details for a single course
     @GetMapping("courses/{id}")
-    public Course courseDetails(@PathVariable Long id) {
-        return courseService.findById(id);
+    public ResponseEntity<?> courseDetails(@PathVariable Long id) {
+        Course course = courseService.findById(id);
+
+        if (course == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        Map<String, String> courseDetail = new HashMap<>();
+
+        courseDetail.put("id", Long.toString(course.getId()));
+        courseDetail.put("description", course.getDescription());
+        courseDetail.put("estimatedTime", course.getEstimatedTime());
+        courseDetail.put("materialsNeeded", course.getMaterialsNeeded());
+        courseDetail.put("title", course.getTitle());
+        courseDetail.put("firstName", course.getUser().getFirstName());
+        courseDetail.put("lastName", course.getUser().getLastName());
+
+
+        return ResponseEntity.ok().body(courseDetail);
     }
 
     // Add a new course
@@ -57,6 +73,12 @@ public class CourseController {
             return new ResponseEntity<>(new CustomErrorType("Create failed due to: " + message.toString()),
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }
+
+        String materialsNeeded = course.getMaterialsNeeded().replaceAll("[\r\n]+", "\n* ");
+
+        materialsNeeded = "* " + materialsNeeded;
+
+        course.setMaterialsNeeded(materialsNeeded);
 
         Course _course = courseService.createCourse(course, currentUser);
 
@@ -93,6 +115,14 @@ public class CourseController {
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
+        String materialsNeeded = course.getMaterialsNeeded().replace("* ", "");
+
+        materialsNeeded = "\n" + materialsNeeded;
+
+        materialsNeeded = materialsNeeded.replaceAll("[\r\n]+", "\n* ");
+
+        course.setMaterialsNeeded(materialsNeeded);
+
         courseService.update(course, currentUser, id);
 
         return new ResponseEntity<>("Course successfully updated", HttpStatus.OK);
@@ -102,14 +132,21 @@ public class CourseController {
     @DeleteMapping("/courses/{id}")
     public ResponseEntity<?> deleteRecipe(@PathVariable("id") Long id, Authentication authentication) {
         User currentUser = userService.findByEmail(authentication.getName());
-        User recipeUser = courseService.findById(id).getUser();
+
+        Course course = courseService.findById(id);
+
+        if (course == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        User recipeUser = course.getUser();
 
         if (currentUser != recipeUser) {
             return new ResponseEntity<>(new CustomErrorType("You can only delete recipes which you created"),
                     HttpStatus.FORBIDDEN);
         }
 
-        courseService.delete(courseService.findById(id));
+        courseService.delete(course);
 
         return new ResponseEntity<>("Recipe has been deleted!", HttpStatus.OK);
     }

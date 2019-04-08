@@ -70,21 +70,21 @@ public class DatabaseLoader implements CommandLineRunner {
                 "Build a Basic Bookcase",
                 "High-end furniture projects are great to dream about. But unless you have a well-equipped shop and" +
                         " some serious woodworking experience to draw on, it can be difficult to turn the dream into " +
-                        "a reality.\\n\\nNot every piece of furniture needs to be a museum showpiece, though. Often a" +
+                        "a reality.\n\nNot every piece of furniture needs to be a museum showpiece, though. Often a" +
                         " simple design does the job just as well and the experience gained in completing it goes a " +
-                        "long way toward making the next project even better.\\n\\nOur pine bookcase, for example, " +
+                        "long way toward making the next project even better.\n\nOur pine bookcase, for example, " +
                         "features simple construction and it's designed to be built with basic woodworking tools. " +
                         "Yet, the finished project is a worthy and useful addition to any room of the house. While " +
                         "it's meant to rest on the floor, you can convert the bookcase to a wall-mounted storage unit" +
                         " by leaving off the baseboard. You can secure the cabinet to the wall by screwing through " +
-                        "the cabinet cleats into the wall studs.\\n\\nWe made the case out of materials available at " +
+                        "the cabinet cleats into the wall studs.\n\nWe made the case out of materials available at " +
                         "most building-supply dealers and lumberyards, including 1/2 x 3/4-in. parting strip, 1 x 2, " +
                         "1 x 4 and 1 x 10 common pine and 1/4-in.-thick lauan plywood. Assembly is quick and easy " +
                         "with glue and nails, and when you're done with construction you have the option of a painted" +
-                        " or clear finish.\\n\\nAs for basic tools, you'll need a portable circular saw, hammer, " +
+                        " or clear finish.\n\nAs for basic tools, you'll need a portable circular saw, hammer, " +
                         "block plane, combination square, tape measure, metal rule, two clamps, nail set and putty " +
                         "knife. Other supplies include glue, nails, sandpaper, wood filler and varnish or paint and " +
-                        "shellac.\\n\\nThe specifications that follow will produce a bookcase with overall dimensions" +
+                        "shellac.\n\nThe specifications that follow will produce a bookcase with overall dimensions" +
                         " of 10 3/4 in. deep x 34 in. wide x 48 in. tall. While the depth of the case is directly " +
                         "tied to the 1 x 10 stock, you can vary the height, width and shelf spacing to suit your " +
                         "needs. Keep in mind, though, that extending the width of the cabinet may require the " +
@@ -99,15 +99,47 @@ public class DatabaseLoader implements CommandLineRunner {
 
         Course c2 = new Course(
                 "Learn How to Program",
-                "In this course, you'll learn how to write code like a pro!",
-                "6 hours",
+                "In this course, you'll learn how to write code like a pro!\n\nYou will learn Python " +
+                        "fundamentals, one of the hottest and fastest growing programming languages. Along with Python," +
+                        " this course will also teach  the languages of the web: HTML, CSS, and JavaScript. Lastly this " +
+                        "course will end with teaching SQL, to help you build the skills you need to analyze data.   ",
+                "24 hours",
                 "* Notebook computer running Mac OS X or Windows\n* Text editor"
         );
 
         c2.setUser(testUserTwo);
 
+        Course c3 = new Course(
+                "Introduction to Docker",
+                "Docker allows any developer of any language to package an app into a container, like a " +
+                        "shipping container. Containers include an app and all the other software it depends on, like " +
+                        "databases. Containers let your users easily run your website, app, or service on any operating" +
+                        "system they want. This course will show you how Docker works, and how it can make it easier to" +
+                        " distribute your software!",
+                "12 hours",
+                "* Laptop running Windows or Mac OS\n* Text editor\n"
+        );
+
+        c3.setUser(testUserOne);
+
+        Course c4 = new Course(
+                "Introduction to Scala",
+                "The name Scala derives from a combination of the words “scalable” and “language”. Scala is a " +
+                        "functional programming language, which runs on top of the Java virtual machine and can use any " +
+                        "Java class. Scala is well suited for distributed programming and big data. It is what Apache " +
+                        "Spark is built in and can provide better performance when compared to Python and is much less " +
+                        "verbose than Java. Whether you’re learning about functional programming or starting a career in" +
+                        "big data, Scala is a great place to start.",
+                "12 hours",
+                "* Laptop running Windows or Mac OS\n* Text editor\n"
+        );
+
+        c4.setUser(testUserTwo);
+
         courseRepository.save(c1);
         courseRepository.save(c2);
+        courseRepository.save(c3);
+        courseRepository.save(c4);
 
     }
 }

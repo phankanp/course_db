@@ -69,7 +69,7 @@ public class AuthController {
                 errors.put("email", "Invalid email");
                 return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
             }
-        } else if (user.getPassword() != passwordEncoder.encode(loginForm.getPassword())) {
+        } else if (!passwordEncoder.matches(loginForm.getPassword(), user.getPassword())) {
             errors.put("password", "Invalid password");
             return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
         }
@@ -80,8 +80,6 @@ public class AuthController {
                         loginForm.getPassword()
                 )
         );
-
-        System.out.println(authentication + "*************************");
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
