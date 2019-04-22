@@ -4,6 +4,7 @@ import com.school.schooldb.model.User;
 import com.school.schooldb.service.UserAdapter;
 import com.school.schooldb.service.UserService;
 import io.jsonwebtoken.*;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
@@ -12,9 +13,11 @@ import java.util.Date;
 @Component
 public class JwtProvider {
 
-    private String jwtSecret = "JWTSuperSecretKey";
+    @Value("${spring.app.jwtSecret}")
+    private String jwtSecret;
 
-    private int jwtExpirationInMs = 604800000;
+    @Value("${spring.app.jwtExpirationInMs}")
+    private int jwtExpirationInMs;
 
     public String generateToken(Authentication authentication) {
 

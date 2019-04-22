@@ -63,4 +63,26 @@ public class CourseService {
 
         courseRepository.delete(course);
     }
+
+    public Course generateAddCourseMarkup(Course course) {
+        String materialsNeeded = course.getMaterialsNeeded().replaceAll("[\r\n]+", "\n* ");
+
+        materialsNeeded = "* " + materialsNeeded;
+
+        course.setMaterialsNeeded(materialsNeeded);
+
+        return course;
+    }
+
+    public Course generateEditCourseMarkup(Course course) {
+        String materialsNeeded = course.getMaterialsNeeded().replace("* ", "");
+
+        materialsNeeded = "\n" + materialsNeeded;
+
+        materialsNeeded = materialsNeeded.replaceAll("[\r\n]+", "\n* ");
+
+        course.setMaterialsNeeded(materialsNeeded);
+
+        return course;
+    }
 }

@@ -2,7 +2,7 @@ package com.school.schooldb.web.controller;
 
 import com.school.schooldb.model.Course;
 import com.school.schooldb.model.User;
-import com.school.schooldb.security.payload.JwtResponse;
+import com.school.schooldb.security.JwtProvider;
 import com.school.schooldb.service.CourseService;
 import com.school.schooldb.service.UserService;
 import com.school.schooldb.util.CustomErrorType;
@@ -28,6 +28,9 @@ public class CourseController {
 
     @Autowired
     UserService userService;
+
+    @Autowired
+    JwtProvider jwtProvider;
 
     // Get all courses
     @GetMapping("/courses")
@@ -74,13 +77,7 @@ public class CourseController {
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        String materialsNeeded = course.getMaterialsNeeded().replaceAll("[\r\n]+", "\n* ");
-
-        materialsNeeded = "* " + materialsNeeded;
-
-        course.setMaterialsNeeded(materialsNeeded);
-
-        Course _course = courseService.createCourse(course, currentUser);
+        Course _course = courseService.createCourse(courseService.generateAddCourseMarkup(course), currentUser);
 
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest().path("/courses/{id}")
@@ -98,8 +95,6 @@ public class CourseController {
         User currentUser = userService.findByEmail(authentication.getName());
         User user = courseService.findById(id).getUser();
 
-        System.out.println(currentUser + " " + user);
-
         if (currentUser != user) {
             return new ResponseEntity<>(new CustomErrorType("You can only update courses which you created"),
                     HttpStatus.FORBIDDEN);
@@ -115,15 +110,16 @@ public class CourseController {
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        String materialsNeeded = course.getMaterialsNeeded().replace("* ", "");
+        Course _course = courseService.generateEditCourseMarkup(course);
 
-        materialsNeeded = "\n" + materialsNeeded;
+        String jwt = jwtProvider.generateToken(authentication);
 
-        materialsNeeded = materialsNeeded.replaceAll("[\r\n]+", "\n* ");
+        if (!jwtProvider.validateToken(jwt)) {
+            return new ResponseEntity<>(new CustomErrorType("Invalid Authorization"),
+                    HttpStatus.UNAUTHORIZED);
+        }
 
-        course.setMaterialsNeeded(materialsNeeded);
-
-        courseService.update(course, currentUser, id);
+        courseService.update(_course, currentUser, id);
 
         return new ResponseEntity<>("Course successfully updated", HttpStatus.OK);
     }
@@ -144,6 +140,13 @@ public class CourseController {
         if (currentUser != recipeUser) {
             return new ResponseEntity<>(new CustomErrorType("You can only delete recipes which you created"),
                     HttpStatus.FORBIDDEN);
+        }
+
+        String jwt = jwtProvider.generateToken(authentication);
+
+        if (!jwtProvider.validateToken(jwt)) {
+            return new ResponseEntity<>(new CustomErrorType("Invalid Authorization"),
+                    HttpStatus.UNAUTHORIZED);
         }
 
         courseService.delete(course);
