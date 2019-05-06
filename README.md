@@ -3,7 +3,7 @@
 A backend REST API for a full stack project with a React client. The app allows school administrators to interface with the school database and manage course offerings. 
 The app is secured using user registration and JWT authentication. Client side validation is implemented via Joi. 
 
-[Live!](https://courses-app-frontend.herokuapp.com/)
+### [Live!](https://courses-app-frontend.herokuapp.com/)
 
 ### Backend Stack
 
