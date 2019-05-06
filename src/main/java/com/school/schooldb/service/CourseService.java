@@ -8,6 +8,7 @@ import com.school.schooldb.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,7 +31,24 @@ public class CourseService {
         this.roleRepository = roleRepository;
     }
 
-    public List<Course> findAll() {return courseRepository.findAll();}
+    public List<Course> findAll() {
+        List<Course> coursesWithUser = courseRepository.findAll();
+        List<Course> courses = new ArrayList<>();
+
+        for (Course c : coursesWithUser) {
+            Course course = new Course();
+
+            course.setId(c.getId());
+            course.setTitle(c.getTitle());
+            course.setDescription(c.getDescription());
+            course.setEstimatedTime(c.getEstimatedTime());
+            course.setMaterialsNeeded(c.getMaterialsNeeded());
+
+            courses.add(course);
+        }
+
+        return courses;
+    }
 
     public Course findById(Long id) {return courseRepository.findCourseById(id);}
 

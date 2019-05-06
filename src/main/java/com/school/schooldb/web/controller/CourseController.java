@@ -35,6 +35,7 @@ public class CourseController {
     // Get all courses
     @GetMapping("/courses")
     public List<Course> getRecipes() {
+
         return courseService.findAll();
     }
 
