@@ -19,6 +19,7 @@ The app is secured using user registration and JWT authentication. Client side v
 ### Client Stack
 
 - React
+- React Router
 - Javascript
 - React Boostrap
 - Font Awesome
